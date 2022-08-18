@@ -46,16 +46,8 @@ public class Main {
 
     directories.forEach(
         directory -> {
-          List<String> fileContent;
-          try {
-            fileContent =
-                new ArrayList<>(
-                    Files.readAllLines(
-                        new File(getFirefoxPreferencesFile(directory)).toPath(),
-                        StandardCharsets.UTF_8));
-          } catch (IOException e) {
-            throw new RuntimeException(e);
-          }
+          String fileToEdit = getFirefoxPreferencesFile(directory);
+          List<String> fileContent = readFileContents(fileToEdit);
 
           fileContent.forEach(
               line -> {
@@ -64,6 +56,15 @@ public class Main {
 
           // Files.write(FILE_PATH, fileContent, StandardCharsets.UTF_8);
         });
+  }
+
+  private static List<String> readFileContents(String filePath) {
+    try {
+      return new ArrayList<>(
+          Files.readAllLines(new File(filePath).toPath(), StandardCharsets.UTF_8));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   private static String getProfileNameFromPath(File file) {
