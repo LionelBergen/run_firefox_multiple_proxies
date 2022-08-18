@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 public class Main {
   private static final List<String> IGNORE_PROFILES = Arrays.asList("default", "default-release");
+  private static final String FF_PREFERENCES_FILE = "prefs.js";
 
   public static void main(String[] args) {
     String appDataFolder = System.getenv("APPDATA");
@@ -24,14 +25,21 @@ public class Main {
         Arrays.asList(new File(fireFoxProfilesDirectory).listFiles(File::isDirectory));
     directories =
         directories.stream()
-            .filter(
-                file ->
-                    !IGNORE_PROFILES.contains(
-                        file.getName().substring(file.getName().lastIndexOf('.') + 1)))
+            .filter(file -> !IGNORE_PROFILES.contains(getProfileNameFromPath(file)))
             .collect(Collectors.toList());
 
-    for (File file : directories) {
-      System.out.println(file);
-    }
+    directories.forEach(
+        directory -> {
+          if (!new File(directory + "/" + FF_PREFERENCES_FILE).isFile()) {
+            throw new RuntimeException(
+                "Profile does not exist for profile: "
+                    + getProfileNameFromPath(directory)
+                    + " Please make sure you've run FF with this profile atleast oncce");
+          }
+        });
+  }
+
+  private static String getProfileNameFromPath(File file) {
+    return file.getName().substring(file.getName().lastIndexOf('.') + 1);
   }
 }
