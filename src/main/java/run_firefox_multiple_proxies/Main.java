@@ -28,6 +28,8 @@ public class Main {
             .filter(file -> !IGNORE_PROFILES.contains(getProfileNameFromPath(file)))
             .collect(Collectors.toList());
 
+    // Ensure every profile has a prefences file. Otherwise warn the user to run FF using the
+    // profile atleast once.
     directories.forEach(
         directory -> {
           if (!new File(directory + "/" + FF_PREFERENCES_FILE).isFile()) {
